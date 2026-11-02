@@ -1,0 +1,11 @@
+_ > nanoagent.plugin.v0001.ProductConfig:
+tagline: "Find reference-list citations PubMed cannot resolve."
+summary: "Citations Not on PubMed checks a reference list of DOIs and bibliographic citations with NCBI E-utilities. It returns the ones PubMed cannot match to a single record, including a miss and an ambiguous match."
+highlights:
+  - "Accepts DOIs and journal, year, volume, page, and author citations."
+  - "Uses PubMed's citation matcher and DOI search."
+  - "Reports a miss and an ambiguous match, and refuses a partial list."
+steps:
+  - "Give up to 30 references, each as a DOI or a piped citation."
+  - "The plugin asks PubMed for one record per reference."
+  - "It returns the references that are missing or ambiguous, in the order you gave them."

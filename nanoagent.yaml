@@ -1,0 +1,32 @@
+_ > nanoagent.plugin.v0001.ManifestConfig:
+id: citations-not-on-pubmed
+name: Citations Not on PubMed
+version: 0.1.0
+status: ready
+spec: nanoagent.plugin/v0001
+
+runtime > nanoagent.plugin.v0001.RuntimeConfig:
+  type: mcp_stdio
+  command: [uv, run, --frozen, python, -m, plugin]
+
+permissions > nanoagent.plugin.v0001.PermissionsConfig:
+  network > nanoagent.plugin.v0001.NetworkConfig:
+    hosts: [eutils.ncbi.nlm.nih.gov]
+  filesystem > nanoagent.plugin.v0001.FilesystemConfig:
+    write: [workspace]
+
+# One entry per contract.Tool; its input and output classes are contract.TOOLS's.
+tools > dict[contract.Tool, nanoagent.plugin.v0001.ToolConfig]:
+  unresolved_citations:
+    description: Resolve each DOI or bibliographic citation and return the ones PubMed cannot match to a single record.
+  pin_unresolved:
+    description: Pin that same unresolved list before the task runs, as the answer key.
+
+# One entry per contract.Task; its input and output classes are contract.TASKS's.
+tasks > dict[contract.Task, nanoagent.plugin.v0001.TaskConfig]:
+  citations-not-on-pubmed:
+    description: Return the references PubMed cannot resolve to a single record.
+    runner: tool
+    tools: [unresolved_citations]
+    reference: pin_unresolved
+    instructions: Call unresolved_citations once with the references, and return that tool's unresolved list unchanged.
