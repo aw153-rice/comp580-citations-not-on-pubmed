@@ -28,16 +28,18 @@ def verify_task(arguments, output, reference, workspace):
     problem = input_problem(arguments) or output_problem(output, arguments)
     if problem:
         return result(False, problem[1])
-    if reference is None:
-        return result(False, "reference is missing")
-    problem = output_problem(reference, arguments)
-    if problem:
-        return result(False, problem[1])
-    if not same_references(output.unresolved, reference.unresolved):
-        return result(False, "output does not match the reference")
+    # A tool run never receives the pin. Judge that call from resolution.json.
+    if reference is not None:
+        problem = output_problem(reference, arguments)
+        if problem:
+            return result(False, problem[1])
+        if not same_references(output.unresolved, reference.unresolved):
+            return result(False, "output does not match the reference")
     kind, payload = load_rows(workspace, arguments.references)
     if kind != "ok":
         return result(False, payload)
     if not same_references(output.unresolved, subset_from_rows(arguments.references, payload)):
         return result(False, "resolution.json does not support the output")
+    if reference is None:
+        return result(True, "output matches the recorded rows")
     return result(True, "output matches the reference")
